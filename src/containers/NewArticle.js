@@ -4,7 +4,6 @@ import LoaderButton from "../components/LoaderButton";
 import config from "../config";
 import "./NewArticle.css";
 import { API } from "aws-amplify";
-import { s3Upload } from "../libs/awsLib";
 
 export default function NewArticle(props) {
   const file = useRef(null);
@@ -19,7 +18,7 @@ export default function NewArticle(props) {
     file.current = event.target.files[0];
   }
 
-async function handleSubmit(event) {
+  async function handleSubmit(event) {
   event.preventDefault();
 
   if (file.current && file.current.size > config.MAX_ATTACHMENT_SIZE) {
@@ -33,28 +32,13 @@ async function handleSubmit(event) {
   setIsLoading(true);
 
   try {
-    const attachment = file.current
-      ? await s3Upload(file.current)
-      : null;
-
-    await createArticle({ content, attachment });
-    props.history.push("/");
-  } catch (e) {
-    alert(e);
-    setIsLoading(false);
-  }
-}
-
-  setIsLoading(true);
-
-  try {
     await createArticle({ content });
     props.history.push("/");
   } catch (e) {
     alert(e);
     setIsLoading(false);
   }
-
+}
 
 function createArticle(article) {
   return API.post("articles", "/POST", {
@@ -89,4 +73,4 @@ function createArticle(article) {
       </form>
     </div>
   );
-  }
+}
